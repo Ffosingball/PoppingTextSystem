@@ -13,7 +13,7 @@ public class PoppingTextComponent : MonoBehaviour
     private float timePassed=0f;
     private TMP_Text poppingText; 
     private RectTransform rectTransform; 
-    private Vector2 originalSize;
+    private float originalFont;
     private Color originalColor;
     private Vector3 originalPosition;
     private PoppingTextStage poppingTextStage = PoppingTextStage.Preparation;
@@ -65,7 +65,7 @@ public class PoppingTextComponent : MonoBehaviour
                 if(poppingTextStage==PoppingTextStage.Preparation)
                 {
                     originalColor = poppingText.color;
-                    originalSize = rectTransform.sizeDelta;
+                    originalFont = poppingText.fontSize;
                     originalPosition = rectTransform.position;
                     poppingTextStage=PoppingTextStage.Appearing;
                 }
@@ -77,25 +77,27 @@ public class PoppingTextComponent : MonoBehaviour
                 if(poppingTextStage==PoppingTextStage.Appearing)
                 {
                     originalColor = poppingText.color;
-                    originalSize = rectTransform.sizeDelta;
+                    originalFont = poppingText.fontSize;
                     originalPosition = rectTransform.position;
                     poppingTextStage=PoppingTextStage.Staying;
                 }
 
                 stayTransformations?.Invoke((timePassed-popTextConfiguration.appearTime)/popTextConfiguration.timeToStay);
             }
-            else
+            else if(timePassed<popTextConfiguration.appearTime+popTextConfiguration.timeToStay+popTextConfiguration.disappearTime)
             {
                 if(poppingTextStage==PoppingTextStage.Staying)
                 {
                     originalColor = poppingText.color;
-                    originalSize = rectTransform.sizeDelta;
+                    originalFont = poppingText.fontSize;
                     originalPosition = rectTransform.position;
                     poppingTextStage=PoppingTextStage.Disappearing;
                 }
 
                 disappearTransformations?.Invoke((timePassed-popTextConfiguration.appearTime-popTextConfiguration.timeToStay)/popTextConfiguration.disappearTime);
             }
+            else
+                Destroy(gameObject);
         }
     }
 
@@ -108,6 +110,7 @@ public class PoppingTextComponent : MonoBehaviour
         foreach(PoppingTextEffects poppingTextEffects in popTextConfiguration.appearEffects)
         {
             addEffect(appearTransformations, poppingTextEffects);
+            changeText(poppingTextEffects);
         }
 
         foreach(PoppingTextEffects poppingTextEffects in popTextConfiguration.stayEffects)
@@ -162,6 +165,43 @@ public class PoppingTextComponent : MonoBehaviour
 
 
 
+    private void changeText(PoppingTextEffects poppingTextEffects)
+    {
+        Vector3 position = rectTransform.position;
+        switch(poppingTextEffects)
+        {
+            case PoppingTextEffects.Enlarge:
+                poppingText.fontSize*=textEffectsConfiguration.changeSizeBy;
+                break;
+            case PoppingTextEffects.Reduce:
+                poppingText.fontSize/=textEffectsConfiguration.changeSizeBy;
+                break;
+            case PoppingTextEffects.Appear:
+                Color color = poppingText.color;
+                color.a = 0;
+                poppingText.color = color;
+                break;
+            case PoppingTextEffects.MoveUp:
+                position.y -= textEffectsConfiguration.moveBy;
+                rectTransform.position = position;
+                break;
+            case PoppingTextEffects.MoveDown:
+                position.y += textEffectsConfiguration.moveBy;
+                rectTransform.position = position;
+                break;
+            case PoppingTextEffects.MoveLeft:
+                position.x += textEffectsConfiguration.moveBy;
+                rectTransform.position = position;
+                break;
+            case PoppingTextEffects.MoveRight:
+                position.y -= textEffectsConfiguration.moveBy;
+                rectTransform.position = position;
+                break;
+        }
+    }
+
+
+
     private void AppearTransparencyEffect(float percentage)
     {
         Color color = poppingText.color;
@@ -182,14 +222,14 @@ public class PoppingTextComponent : MonoBehaviour
 
     private void EnlargeEffect(float percentage)
     {
-        rectTransform.sizeDelta = originalSize * Mathf.Lerp(1, textEffectsConfiguration.changeSizeBy, Mathf.Clamp01(percentage));
+        poppingText.fontSize = originalFont * Mathf.Lerp(1, textEffectsConfiguration.changeSizeBy, Mathf.Clamp01(percentage));
     }
 
 
 
     private void ReduceEffect(float percentage)
     {
-        rectTransform.sizeDelta = originalSize * Mathf.Lerp(1, 1/textEffectsConfiguration.changeSizeBy, Mathf.Clamp01(percentage));
+        poppingText.fontSize = originalFont * Mathf.Lerp(1, 1/textEffectsConfiguration.changeSizeBy, Mathf.Clamp01(percentage));
     }
 
 
