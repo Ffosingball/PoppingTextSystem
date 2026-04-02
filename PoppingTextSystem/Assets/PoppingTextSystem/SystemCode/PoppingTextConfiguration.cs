@@ -12,7 +12,19 @@ public enum PoppingTextEffects
     Appear,
     MoveUp,
     MoveDown,
+    MoveLeft,
+    MoveRight,
     Blink,
+    BlinkColor,
+}
+
+
+public enum PoppingTextStage
+{
+    Preparation,
+    Appearing,
+    Staying,
+    Disappearing
 }
 
 
@@ -27,6 +39,8 @@ public class PopTextConfiguration
     public List<PoppingTextEffects> appearEffects;
     public List<PoppingTextEffects> stayEffects;
     public List<PoppingTextEffects> disappearEffects;
+    //Set only if you will use blinkColorEffect
+    public Color blinkToColor;
 
     public PopTextConfiguration(GameObject appearAt)
     {
