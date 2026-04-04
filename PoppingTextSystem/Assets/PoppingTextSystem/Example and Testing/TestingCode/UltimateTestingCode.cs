@@ -38,14 +38,15 @@ public class UltimateTestingCode : MonoBehaviour
     {
         timePassed+=Time.deltaTime;
         object2.transform.Translate(speed*Time.deltaTime*new Vector2(1,0)*direction);
-        object3.transform.Translate(speed*Time.deltaTime*new Vector2(1,1)*direction);
+        object3.transform.Translate(speed*Time.deltaTime*new Vector2(1,-1)*direction);
 
         if(timePassed>=period)
         {
             direction*=-1f;
             timePassed-=period;
             Vector3 pos = object4.transform.position;
-            pos.y= direction<0 ? pos.y-8f : pos.y+8f;
+            pos.x= direction<0 ? pos.x+positionToChange : pos.x-positionToChange;
+            object4.transform.position = pos;
         }
 
         string listOfEffects = "";
@@ -61,6 +62,7 @@ public class UltimateTestingCode : MonoBehaviour
         }
         appearEffectsText.text = listOfEffects;
 
+        listOfEffects = "";
         if(popTextConfiguration.stayEffects.Count==0)
             listOfEffects="None";
         else
@@ -72,6 +74,7 @@ public class UltimateTestingCode : MonoBehaviour
         }
         stayEffectsText.text = listOfEffects;
 
+        listOfEffects = "";
         if(popTextConfiguration.disappearEffects.Count==0)
             listOfEffects="None";
         else

@@ -49,20 +49,12 @@ public class PoppingTextComponent : MonoBehaviour
 
     private void Start()
     {
-        //Get components
-        gameObject.SetActive(false);
-        poppingText = GetComponent<TMP_Text>();
-        if(poppingText==null)
-            Debug.Log("Popping text should have TMP text component!");
-
-        rectTransform = GetComponent<RectTransform>();
-        if(rectTransform==null)
-            Debug.Log("Popping text should have RectTransform component!");
-
         //Check that this is a first text configuration and its stage is preparation then 
         //start popping text
         if(popTextConfiguration!=null && poppingTextStage==PoppingTextStage.Preparation)
             StartPoppingText();
+        else if(popTextConfiguration==null && poppingTextStage==PoppingTextStage.Preparation)
+            gameObject.SetActive(false);
     }
 
 
@@ -115,22 +107,37 @@ public class PoppingTextComponent : MonoBehaviour
     //This method initializes popping text effects, properties and shows it
     private void StartPoppingText()
     {
+        //Get components
+        poppingText = GetComponent<TMP_Text>();
+        if(poppingText==null)
+            Debug.Log("Popping text should have TMP text component!");
+
+        rectTransform = GetComponent<RectTransform>();
+        if(rectTransform==null)
+            Debug.Log("Popping text should have RectTransform component!");
+
+        if(popTextConfiguration==null)
+            Debug.Log("Popping text configuration should not be null!");
+
+        if(textEffectsConfiguration==null)
+            Debug.Log("Text effects should not be null!");
+
         gameObject.SetActive(true);
 
         foreach(PoppingTextEffects poppingTextEffects in popTextConfiguration.appearEffects)
         {
-            addEffect(appearTransformations, poppingTextEffects);
+            appearTransformations += addEffect(poppingTextEffects);
             changeText(poppingTextEffects);
         }
 
         foreach(PoppingTextEffects poppingTextEffects in popTextConfiguration.stayEffects)
         {
-            addEffect(stayTransformations, poppingTextEffects);
+            stayTransformations += addEffect(poppingTextEffects);
         }
 
         foreach(PoppingTextEffects poppingTextEffects in popTextConfiguration.disappearEffects)
         {
-            addEffect(disappearTransformations, poppingTextEffects);
+            disappearTransformations += addEffect(poppingTextEffects);
         }
 
         originalColor = poppingText.color;
@@ -142,42 +149,37 @@ public class PoppingTextComponent : MonoBehaviour
 
 
     //This method adds correct effect to the event action by its enum type
-    private void addEffect(Action<float> transform, PoppingTextEffects poppingTextEffects)
+    private Action<float> addEffect(PoppingTextEffects poppingTextEffects)
     {
         switch(poppingTextEffects)
         {
             case PoppingTextEffects.Fade:
-                transform+=FadeEffect;
-                break;
+                return FadeEffect;
             case PoppingTextEffects.Enlarge:
-                transform+=EnlargeEffect;
-                break;
+                return EnlargeEffect;
             case PoppingTextEffects.Reduce:
-                transform+=ReduceEffect;
-                break;
+                return ReduceEffect;
             case PoppingTextEffects.Appear:
-                transform+=AppearTransparencyEffect;
-                break;
+                return AppearTransparencyEffect;
             case PoppingTextEffects.MoveUp:
-                transform+=MoveUpEffect;
-                break;
+                return MoveUpEffect;
             case PoppingTextEffects.MoveDown:
-                transform+=MoveDownEffect;
-                break;
+                return MoveDownEffect;
             case PoppingTextEffects.MoveLeft:
-                transform+=MoveLeftEffect;
-                break;
+                return MoveLeftEffect;
             case PoppingTextEffects.MoveRight:
-                transform+=MoveRightEffect;
-                break;
+                return MoveRightEffect;
             case PoppingTextEffects.Blink:
-                transform+=BlinkEffect;
-                break;
+                return BlinkEffect;
             case PoppingTextEffects.BlinkColor:
-                transform+=BlinkColorEffect;
-                break;
+                return BlinkColorEffect;
         }
+
+        return Nothing;
     }
+
+
+    private void Nothing(float value){}
 
 
 
@@ -188,10 +190,10 @@ public class PoppingTextComponent : MonoBehaviour
         switch(poppingTextEffects)
         {
             case PoppingTextEffects.Enlarge:
-                poppingText.fontSize*=textEffectsConfiguration.changeSizeBy;
+                poppingText.fontSize/=textEffectsConfiguration.changeSizeBy;
                 break;
             case PoppingTextEffects.Reduce:
-                poppingText.fontSize/=textEffectsConfiguration.changeSizeBy;
+                poppingText.fontSize*=textEffectsConfiguration.changeSizeBy;
                 break;
             case PoppingTextEffects.Appear:
                 Color color = poppingText.color;
@@ -240,6 +242,7 @@ public class PoppingTextComponent : MonoBehaviour
     private void EnlargeEffect(float percentage)
     {
         poppingText.fontSize = originalFont * Mathf.Lerp(1, textEffectsConfiguration.changeSizeBy, Mathf.Clamp01(percentage));
+        Debug.Log("Enlarging: "+poppingText.fontSize);
     }
 
 

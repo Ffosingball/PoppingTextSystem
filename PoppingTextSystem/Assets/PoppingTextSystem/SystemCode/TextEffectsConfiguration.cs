@@ -11,4 +11,6 @@ public class TextEffectsConfiguration : ScriptableObject
     public float blinkPeriod = 0.5f;
     [Tooltip("How much to change transparency during blinking effect")]
     public float blinkRange = 50f;
+    [Tooltip("If your game is 2d then set this value either + or - 0.01f, if 3d set it to 0")]
+    public float changeZby = -0.001f;
 }

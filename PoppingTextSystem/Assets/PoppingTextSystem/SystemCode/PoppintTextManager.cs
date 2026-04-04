@@ -34,7 +34,9 @@ public class PoppingTextManager : MonoBehaviour
     //same applies for the popText it has to be valid (it should have rectTransform, tm_text and poppintTextComponent components)
     public void createCustomPoppingTextWithConfig(string message, PopTextConfiguration popTextConfiguration, GameObject popText)
     {
-        GameObject newPoppingText = Instantiate(popText, popTextConfiguration.appearAt.transform.position, Quaternion.identity);
+        Vector3 position = popTextConfiguration.appearAt.transform.position;
+        position.z+=textEffectsConfiguration.changeZby;
+        GameObject newPoppingText = Instantiate(popText, position, Quaternion.identity);
 
         if(popTextConfiguration.moveWithGameObject)
         {
@@ -42,8 +44,8 @@ public class PoppingTextManager : MonoBehaviour
             newPoppingText.GetComponent<RectTransform>().position = new Vector3(0,0,0);
         }
 
-        newPoppingText.GetComponent<PoppingTextComponent>().setPopTextConfiguration(popTextConfiguration);
         newPoppingText.GetComponent<PoppingTextComponent>().setTextEffectsConfiguration(textEffectsConfiguration);
+        newPoppingText.GetComponent<PoppingTextComponent>().setPopTextConfiguration(popTextConfiguration);
         newPoppingText.GetComponent<TMP_Text>().text = message;
     }
 }
