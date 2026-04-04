@@ -1,0 +1,47 @@
+To begin using popping text add PoppingTextManager component into the scene, after there two ways 
+create poppintText. First just using createUsualPoppingText method, then you need to provide your
+own completed configuration textMessage and text gameobject; or you can create several prefabricated
+popping text with the same effects like I did as an example in createUsualPoppingText method.
+
+Poppint text has three stages: appearing, staying and disappearing, for each of this stages you can add any text effects.
+
+You can add new effects for the text by its name to the PoppingTextEffects, its functionality to
+poppingTextComponent and its application in the addEffect method in the same file! Also when effects
+are applied at the appearing stage, the system assumes that text should appear to its state as it was at the beginning. So, if you apply enlarge at the appearing stage, the component will make text
+smaller so it will enlarge to its predefined size as it was in the prefab. Therefore, if you want 
+your effect to do the same thing you also need to include text change in the changeText method!
+
+In the TextEffectConfiguration you can add or change effects parametres I made as a scriptable 
+object.
+
+//BE CAREFULL that some effects might be incompatible with each other, (incompatible between each 
+other effects can be found by using common sense. For example enlarge and reduce are incompatible
+between each other)
+
+
+
+A popping text gameobject should have these three components to work properly: RectTransform, 
+TMP_Text and PoppingTextComponent. Also it has to be created in the world, not in the canvas!
+
+
+
+1. PoppingTextManager is a component which manages creation of poppingText
+
+Methods:
+void createUsualPoppingText(string message, GameObject appearAt)
+void createCustomPoppingTextWithConfig(string message, PopTextConfiguration popTextConfiguration, GameObject popText)
+
+
+
+2. PoppingTextComponent applies effect to the text at three different stages and after destroys itself
+
+Getters and setters:
+PopTextConfiguration getPopTextConfiguration()
+void setPopTextConfiguration(PopTextConfiguration popTextConfiguration)
+void setTextEffectsConfiguration(TextEffectsConfiguration textEffectsConfiguration)
+
+
+
+3. PopTextConfiguration you set all poppingText configuration here
+
+Constructor(Gameobject appearAt)

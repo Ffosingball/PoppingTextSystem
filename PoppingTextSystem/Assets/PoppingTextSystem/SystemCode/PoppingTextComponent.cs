@@ -5,14 +5,19 @@ using UnityEngine;
 
 public class PoppingTextComponent : MonoBehaviour
 {
+    //Configurations of the pop text and effects
     [SerializeField] private PopTextConfiguration popTextConfiguration=null;
     [SerializeField] private TextEffectsConfiguration textEffectsConfiguration;
+    //They will store references to all effects which should be applied at each stage
     private event Action<float> appearTransformations;
     private event Action<float> disappearTransformations;
     private event Action<float> stayTransformations;
+    //Time passed since the creation of this pop text
     private float timePassed=0f;
+    //References to its components
     private TMP_Text poppingText; 
     private RectTransform rectTransform; 
+    //Storing its original properties
     private float originalFont;
     private Color originalColor;
     private Vector3 originalPosition;
@@ -26,7 +31,9 @@ public class PoppingTextComponent : MonoBehaviour
 
     public void setPopTextConfiguration(PopTextConfiguration popTextConfiguration)
     {
-        if(this.popTextConfiguration==null)
+        //Check that this is a first text configuration and its stage is preparation then 
+        //start popping text
+        if(this.popTextConfiguration==null && poppingTextStage==PoppingTextStage.Preparation)
         {
             this.popTextConfiguration = popTextConfiguration;
             StartPoppingText();
@@ -42,6 +49,7 @@ public class PoppingTextComponent : MonoBehaviour
 
     private void Start()
     {
+        //Get components
         gameObject.SetActive(false);
         poppingText = GetComponent<TMP_Text>();
         if(poppingText==null)
@@ -50,30 +58,30 @@ public class PoppingTextComponent : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         if(rectTransform==null)
             Debug.Log("Popping text should have RectTransform component!");
+
+        //Check that this is a first text configuration and its stage is preparation then 
+        //start popping text
+        if(popTextConfiguration!=null && poppingTextStage==PoppingTextStage.Preparation)
+            StartPoppingText();
     }
 
 
 
     private void Update()
     {
+        //If its configuration is set then apply effects
         if(popTextConfiguration!=null)
         {
             timePassed+=Time.deltaTime;
 
+            //Check which effects to apply by looking how much time has passed
             if(timePassed<popTextConfiguration.appearTime)
             {
-                if(poppingTextStage==PoppingTextStage.Preparation)
-                {
-                    originalColor = poppingText.color;
-                    originalFont = poppingText.fontSize;
-                    originalPosition = rectTransform.position;
-                    poppingTextStage=PoppingTextStage.Appearing;
-                }
-
                 appearTransformations?.Invoke(timePassed/popTextConfiguration.appearTime);
             }
             else if(timePassed<popTextConfiguration.appearTime+popTextConfiguration.timeToStay)
             {
+                //Set new original properties when text transitions to new stage
                 if(poppingTextStage==PoppingTextStage.Appearing)
                 {
                     originalColor = poppingText.color;
@@ -86,6 +94,7 @@ public class PoppingTextComponent : MonoBehaviour
             }
             else if(timePassed<popTextConfiguration.appearTime+popTextConfiguration.timeToStay+popTextConfiguration.disappearTime)
             {
+                //Set new original properties when text transitions to new stage
                 if(poppingTextStage==PoppingTextStage.Staying)
                 {
                     originalColor = poppingText.color;
@@ -96,13 +105,14 @@ public class PoppingTextComponent : MonoBehaviour
 
                 disappearTransformations?.Invoke((timePassed-popTextConfiguration.appearTime-popTextConfiguration.timeToStay)/popTextConfiguration.disappearTime);
             }
-            else
+            else//When all time is passed then destroy itself
                 Destroy(gameObject);
         }
     }
 
 
 
+    //This method initializes popping text effects, properties and shows it
     private void StartPoppingText()
     {
         gameObject.SetActive(true);
@@ -122,10 +132,16 @@ public class PoppingTextComponent : MonoBehaviour
         {
             addEffect(disappearTransformations, poppingTextEffects);
         }
+
+        originalColor = poppingText.color;
+        originalFont = poppingText.fontSize;
+        originalPosition = rectTransform.position;
+        poppingTextStage=PoppingTextStage.Appearing;
     }
 
 
 
+    //This method adds correct effect to the event action by its enum type
     private void addEffect(Action<float> transform, PoppingTextEffects poppingTextEffects)
     {
         switch(poppingTextEffects)
@@ -165,6 +181,7 @@ public class PoppingTextComponent : MonoBehaviour
 
 
 
+    //This method changes text properties, so appearing effects will make its appear nice
     private void changeText(PoppingTextEffects poppingTextEffects)
     {
         Vector3 position = rectTransform.position;
@@ -201,7 +218,7 @@ public class PoppingTextComponent : MonoBehaviour
     }
 
 
-
+    //below are all effects methods
     private void AppearTransparencyEffect(float percentage)
     {
         Color color = poppingText.color;

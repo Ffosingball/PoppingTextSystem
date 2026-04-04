@@ -6,8 +6,6 @@ public class PoppingTextManager : MonoBehaviour
 {
     [SerializeField] private TextEffectsConfiguration textEffectsConfiguration;
     [SerializeField] private GameObject poppingTextUsual;
-    [SerializeField] private GameObject poppingTextSpecial1;
-    [SerializeField] private GameObject poppingTextSpecial2;
 
     
     //If you want different types of appearing text, in this manager you can add 
@@ -32,9 +30,11 @@ public class PoppingTextManager : MonoBehaviour
 
 
     //Or you can create popTextConfiguration somewhere else and pass it here
-    public void createPoppingTextWithConfig(string message, PopTextConfiguration popTextConfiguration)
+    //Provided PopTextConfiguration has to be fully completed 
+    //same applies for the popText it has to be valid (it should have rectTransform, tm_text and poppintTextComponent components)
+    public void createCustomPoppingTextWithConfig(string message, PopTextConfiguration popTextConfiguration, GameObject popText)
     {
-        GameObject newPoppingText = Instantiate(poppingTextUsual, popTextConfiguration.appearAt.transform.position, Quaternion.identity);
+        GameObject newPoppingText = Instantiate(popText, popTextConfiguration.appearAt.transform.position, Quaternion.identity);
 
         if(popTextConfiguration.moveWithGameObject)
         {
