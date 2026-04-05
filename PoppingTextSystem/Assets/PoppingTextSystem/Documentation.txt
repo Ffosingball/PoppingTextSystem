@@ -3,7 +3,7 @@ create poppintText. First just using createUsualPoppingText method, then you nee
 own completed configuration textMessage and text gameobject; or you can create several prefabricated
 popping text with the same effects like I did as an example in createUsualPoppingText method.
 
-Poppint text has three stages: appearing, staying and disappearing, for each of this stages you can add any text effects.
+Popping text has three stages: appearing, staying and disappearing, for each of this stages you can add any text effects.
 
 You can add new effects for the text by its name to the PoppingTextEffects, its functionality to
 poppingTextComponent and its application in the addEffect method in the same file! Also when effects
@@ -33,15 +33,49 @@ void createCustomPoppingTextWithConfig(string message, PopTextConfiguration popT
 
 
 
-2. PoppingTextComponent applies effect to the text at three different stages and after destroys itself
+2. PoppingTextComponent applies effect to the text at three different stages and after destroys itself. To start it you have to give it popTextConfiguration and textEffectsConfiguration 
+objects and after call StartPoppingText method!
 
 Getters and setters:
 PopTextConfiguration getPopTextConfiguration()
 void setPopTextConfiguration(PopTextConfiguration popTextConfiguration)
 void setTextEffectsConfiguration(TextEffectsConfiguration textEffectsConfiguration)
 
+Methods:
+void StartPoppingText()
+
 
 
 3. PopTextConfiguration you set all poppingText configuration here
 
 Constructor(Gameobject appearAt)
+
+
+
+List and description of all text effects:
+ 1. Fade - Changes transparency of the text from its current value to 0 over the time of the current
+stage (incompatible with appear)
+ 2. Enlarge - Increases size of the text from its current value by changeSizeBy (which you can 
+adjust in the text effects configuration); At the appear stage this effect enlarges text from very 
+small to its usual size
+ 3. SecondaryEnlarge - Same as enlarge, but increases text by secondarySizeChangeBy (which you can 
+adjust in the text effects cobfiguration); At the appear stage this effect enlarges text from small 
+to its usual size 
+ 4. Reduce - Decreases size of the text from its current value by changeSizeBy (which you can 
+adjust in the text effects configuration); At the appear stage this effect reduces size of the text 
+from very large to its usual size
+ 5. SecondaryReduce - Same as reduce, but decreases text by secondarySizeChangeBy (which you can 
+adjust in the text effects configuration); At the appear stage this effect reduces size of the text 
+from large to its usual size
+ 6. MoveUp - Moves text up by moveBySpeed (which you can adjust in the text effects configuration)
+ 7. MoveDown - Moves text down by moveBySpeed (which you can adjust in the text effects 
+configuration)
+ 8. MoveLeft - Moves text left by moveBySpeed (which you can adjust in the text effects 
+configuration)
+ 9. MoveRight - Moves text right by moveBySpeed (which you can adjust in the text effects 
+configuration)
+ 10. Blink - Blinks text from its current transparency value to 0.1f in the blinkPeriod (which you 
+can adjust in the text effects configuration)
+ 11. BlinkColor - Blinks text from its current color to the color which was provided in the 
+popTextConfiguration object in the blinkPeriod time (which you can adjust in the text effects 
+configuration)

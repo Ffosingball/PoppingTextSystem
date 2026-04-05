@@ -325,4 +325,25 @@ public class UltimateTestingCode : MonoBehaviour
     {
         poppingTextManager.createCustomPoppingTextWithConfig("Example message",popTextConfiguration,textSelected);
     }
+
+
+
+    public void createPreconfigText1()
+    {
+        poppingTextManager.createPreconfigPopText1("Preconfig1", popTextConfiguration.appearAt);
+    }
+
+
+
+    public void createPreconfigText2()
+    {
+        poppingTextManager.createPreconfigPopText2("Preconfig2", popTextConfiguration.appearAt);
+    }
+
+
+
+    public void createPreconfigText3()
+    {
+        poppingTextManager.createPreconfigPopText3("Preconfig3", popTextConfiguration.appearAt);
+    }
 }

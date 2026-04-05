@@ -34,10 +34,7 @@ public class PoppingTextComponent : MonoBehaviour
         //Check that this is a first text configuration and its stage is preparation then 
         //start popping text
         if(this.popTextConfiguration==null && poppingTextStage==PoppingTextStage.Preparation)
-        {
             this.popTextConfiguration = popTextConfiguration;
-            StartPoppingText();
-        }
     }
 
     public void setTextEffectsConfiguration(TextEffectsConfiguration textEffectsConfiguration)
@@ -51,7 +48,7 @@ public class PoppingTextComponent : MonoBehaviour
     {
         //Check that this is a first text configuration and its stage is preparation then 
         //start popping text
-        if(popTextConfiguration!=null && poppingTextStage==PoppingTextStage.Preparation)
+        if(popTextConfiguration!=null && textEffectsConfiguration!=null && poppingTextStage==PoppingTextStage.Preparation)
             StartPoppingText();
         else if(popTextConfiguration==null && poppingTextStage==PoppingTextStage.Preparation)
             gameObject.SetActive(false);
@@ -105,7 +102,7 @@ public class PoppingTextComponent : MonoBehaviour
 
 
     //This method initializes popping text effects, properties and shows it
-    private void StartPoppingText()
+    public void StartPoppingText()
     {
         //Get components
         poppingText = GetComponent<TMP_Text>();
@@ -220,7 +217,6 @@ public class PoppingTextComponent : MonoBehaviour
         Color color = poppingText.color;
         color.a = Mathf.Lerp(originalColor.a, 1, Mathf.Clamp01(percentage));
         poppingText.color = color;
-        //Debug.Log("Appearing: "+color.a);
     }
 
 
@@ -230,7 +226,6 @@ public class PoppingTextComponent : MonoBehaviour
         Color color = poppingText.color;
         color.a = Mathf.Lerp(originalColor.a, 0, Mathf.Clamp01(percentage));
         poppingText.color = color;
-        //Debug.Log("Fading: "+color.a);
     }
 
 
@@ -238,7 +233,6 @@ public class PoppingTextComponent : MonoBehaviour
     private void EnlargeEffect(float percentage)
     {
         poppingText.fontSize = originalFont * Mathf.Lerp(1, textEffectsConfiguration.changeSizeBy, Mathf.Clamp01(percentage));
-        //Debug.Log("Enlarging: "+poppingText.fontSize);
     }
 
 
@@ -310,14 +304,13 @@ public class PoppingTextComponent : MonoBehaviour
         int increaseOrDecrease = (int)(timePassedInStage/textEffectsConfiguration.blinkPeriod);
         Color color = poppingText.color;
 
-        float blinkPercentage = (timePassedInStage/textEffectsConfiguration.blinkPeriod)-(textEffectsConfiguration.blinkPeriod*increaseOrDecrease);
+        float blinkPercentage = (timePassedInStage/textEffectsConfiguration.blinkPeriod)-increaseOrDecrease;
         if(increaseOrDecrease%2==0)
-            color.a = Mathf.Lerp(0.1f,1f, Mathf.Clamp01(blinkPercentage));
+            color.a = Mathf.Lerp(0.1f,originalColor.a, Mathf.Clamp01(blinkPercentage));
         else
-            color.a = Mathf.Lerp(1f, 0.1f, Mathf.Clamp01(blinkPercentage));
+            color.a = Mathf.Lerp(originalColor.a, 0.1f, Mathf.Clamp01(blinkPercentage));
 
         poppingText.color = color;
-        Debug.Log("Blinking: "+blinkPercentage+"; incOrDec: "+increaseOrDecrease);
     }
 
 
@@ -341,7 +334,7 @@ public class PoppingTextComponent : MonoBehaviour
         int increaseOrDecrease = (int)(timePassedInStage/textEffectsConfiguration.blinkPeriod);
         Color color = poppingText.color;
 
-        float blinkPercentage = (timePassedInStage/textEffectsConfiguration.blinkPeriod)-(textEffectsConfiguration.blinkPeriod*increaseOrDecrease);
+        float blinkPercentage = (timePassedInStage/textEffectsConfiguration.blinkPeriod)-increaseOrDecrease;
         if(increaseOrDecrease%2==0)
         {
             color.r = Mathf.Lerp(originalColor.r, popTextConfiguration.blinkToColor.r, Mathf.Clamp01(blinkPercentage));
