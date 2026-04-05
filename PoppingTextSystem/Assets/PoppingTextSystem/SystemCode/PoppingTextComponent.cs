@@ -87,7 +87,7 @@ public class PoppingTextComponent : MonoBehaviour
             else if(timePassed<popTextConfiguration.appearTime+popTextConfiguration.timeToStay+popTextConfiguration.disappearTime)
             {
                 //Set new original properties when text transitions to new stage
-                if(poppingTextStage==PoppingTextStage.Staying)
+                if(poppingTextStage==PoppingTextStage.Staying || poppingTextStage==PoppingTextStage.Appearing)
                 {
                     originalColor = poppingText.color;
                     originalFont = poppingText.fontSize;
@@ -173,6 +173,10 @@ public class PoppingTextComponent : MonoBehaviour
                 return BlinkEffect;
             case PoppingTextEffects.BlinkColor:
                 return BlinkColorEffect;
+            case PoppingTextEffects.SecondaryEnlarge:
+                return SecondaryEnlargeEffect;
+            case PoppingTextEffects.SecondaryReduce:
+                return SecondaryReduceEffect;
         }
 
         return Nothing;
@@ -200,21 +204,11 @@ public class PoppingTextComponent : MonoBehaviour
                 color.a = 0;
                 poppingText.color = color;
                 break;
-            case PoppingTextEffects.MoveUp:
-                position.y -= textEffectsConfiguration.moveBy;
-                rectTransform.position = position;
+            case PoppingTextEffects.SecondaryEnlarge:
+                poppingText.fontSize/=textEffectsConfiguration.secondarySizeChangeBy;
                 break;
-            case PoppingTextEffects.MoveDown:
-                position.y += textEffectsConfiguration.moveBy;
-                rectTransform.position = position;
-                break;
-            case PoppingTextEffects.MoveLeft:
-                position.x += textEffectsConfiguration.moveBy;
-                rectTransform.position = position;
-                break;
-            case PoppingTextEffects.MoveRight:
-                position.y -= textEffectsConfiguration.moveBy;
-                rectTransform.position = position;
+            case PoppingTextEffects.SecondaryReduce:
+                poppingText.fontSize*=textEffectsConfiguration.secondarySizeChangeBy;
                 break;
         }
     }
@@ -224,8 +218,9 @@ public class PoppingTextComponent : MonoBehaviour
     private void AppearTransparencyEffect(float percentage)
     {
         Color color = poppingText.color;
-        color.a = Mathf.Lerp(originalColor.a, 255, Mathf.Clamp01(percentage));
+        color.a = Mathf.Lerp(originalColor.a, 1, Mathf.Clamp01(percentage));
         poppingText.color = color;
+        //Debug.Log("Appearing: "+color.a);
     }
 
 
@@ -235,6 +230,7 @@ public class PoppingTextComponent : MonoBehaviour
         Color color = poppingText.color;
         color.a = Mathf.Lerp(originalColor.a, 0, Mathf.Clamp01(percentage));
         poppingText.color = color;
+        //Debug.Log("Fading: "+color.a);
     }
 
 
@@ -242,7 +238,14 @@ public class PoppingTextComponent : MonoBehaviour
     private void EnlargeEffect(float percentage)
     {
         poppingText.fontSize = originalFont * Mathf.Lerp(1, textEffectsConfiguration.changeSizeBy, Mathf.Clamp01(percentage));
-        Debug.Log("Enlarging: "+poppingText.fontSize);
+        //Debug.Log("Enlarging: "+poppingText.fontSize);
+    }
+
+
+
+    private void SecondaryEnlargeEffect(float percentage)
+    {
+        poppingText.fontSize = originalFont * Mathf.Lerp(1, textEffectsConfiguration.secondarySizeChangeBy, Mathf.Clamp01(percentage));
     }
 
 
@@ -254,37 +257,36 @@ public class PoppingTextComponent : MonoBehaviour
 
 
 
+    private void SecondaryReduceEffect(float percentage)
+    {
+        poppingText.fontSize = originalFont * Mathf.Lerp(1, 1/textEffectsConfiguration.secondarySizeChangeBy, Mathf.Clamp01(percentage));
+    }
+
+
+
     private void MoveUpEffect(float percentage)
     {
-        Vector3 currentPosition = originalPosition;
-        currentPosition.y += Mathf.Lerp(0, textEffectsConfiguration.moveBy, Mathf.Clamp01(percentage));
-        rectTransform.position = currentPosition;
+        rectTransform.anchoredPosition += Vector2.up * textEffectsConfiguration.moveBySpeed * Time.deltaTime;
     }
 
 
 
     private void MoveDownEffect(float percentage)
     {
-        Vector3 currentPosition = originalPosition;
-        currentPosition.y -= Mathf.Lerp(0, textEffectsConfiguration.moveBy, Mathf.Clamp01(percentage));
-        rectTransform.position = currentPosition;
+        rectTransform.anchoredPosition += Vector2.down * textEffectsConfiguration.moveBySpeed * Time.deltaTime;
     }
 
 
     private void MoveLeftEffect(float percentage)
     {
-        Vector3 currentPosition = originalPosition;
-        currentPosition.x -= Mathf.Lerp(0, textEffectsConfiguration.moveBy, Mathf.Clamp01(percentage));
-        rectTransform.position = currentPosition;
+        rectTransform.anchoredPosition += Vector2.left * textEffectsConfiguration.moveBySpeed * Time.deltaTime;
     }
 
 
 
     private void MoveRightEffect(float percentage)
     {
-        Vector3 currentPosition = originalPosition;
-        currentPosition.x += Mathf.Lerp(0, textEffectsConfiguration.moveBy, Mathf.Clamp01(percentage));
-        rectTransform.position = currentPosition;
+        rectTransform.anchoredPosition += Vector2.right * textEffectsConfiguration.moveBySpeed * Time.deltaTime;
     }
 
 
@@ -308,12 +310,14 @@ public class PoppingTextComponent : MonoBehaviour
         int increaseOrDecrease = (int)(timePassedInStage/textEffectsConfiguration.blinkPeriod);
         Color color = poppingText.color;
 
+        float blinkPercentage = (timePassedInStage/textEffectsConfiguration.blinkPeriod)-(textEffectsConfiguration.blinkPeriod*increaseOrDecrease);
         if(increaseOrDecrease%2==0)
-            color.a = Mathf.Lerp(Mathf.Max(originalColor.a-textEffectsConfiguration.blinkRange,0), Mathf.Min(originalColor.a+textEffectsConfiguration.blinkRange,255), Mathf.Clamp01(percentage));
+            color.a = Mathf.Lerp(0.1f,1f, Mathf.Clamp01(blinkPercentage));
         else
-            color.a = Mathf.Lerp(Mathf.Min(originalColor.a+textEffectsConfiguration.blinkRange,255), Mathf.Max(originalColor.a-textEffectsConfiguration.blinkRange,0), Mathf.Clamp01(percentage));
+            color.a = Mathf.Lerp(1f, 0.1f, Mathf.Clamp01(blinkPercentage));
 
         poppingText.color = color;
+        Debug.Log("Blinking: "+blinkPercentage+"; incOrDec: "+increaseOrDecrease);
     }
 
 
@@ -337,17 +341,18 @@ public class PoppingTextComponent : MonoBehaviour
         int increaseOrDecrease = (int)(timePassedInStage/textEffectsConfiguration.blinkPeriod);
         Color color = poppingText.color;
 
+        float blinkPercentage = (timePassedInStage/textEffectsConfiguration.blinkPeriod)-(textEffectsConfiguration.blinkPeriod*increaseOrDecrease);
         if(increaseOrDecrease%2==0)
         {
-            color.r = Mathf.Lerp(originalColor.r, popTextConfiguration.blinkToColor.r, Mathf.Clamp01(percentage));
-            color.g = Mathf.Lerp(originalColor.g, popTextConfiguration.blinkToColor.g, Mathf.Clamp01(percentage));
-            color.b = Mathf.Lerp(originalColor.b, popTextConfiguration.blinkToColor.b, Mathf.Clamp01(percentage));
+            color.r = Mathf.Lerp(originalColor.r, popTextConfiguration.blinkToColor.r, Mathf.Clamp01(blinkPercentage));
+            color.g = Mathf.Lerp(originalColor.g, popTextConfiguration.blinkToColor.g, Mathf.Clamp01(blinkPercentage));
+            color.b = Mathf.Lerp(originalColor.b, popTextConfiguration.blinkToColor.b, Mathf.Clamp01(blinkPercentage));
         }
         else
         {
-            color.r = Mathf.Lerp(popTextConfiguration.blinkToColor.r, originalColor.r, Mathf.Clamp01(percentage));
-            color.g = Mathf.Lerp(popTextConfiguration.blinkToColor.g, originalColor.g, Mathf.Clamp01(percentage));
-            color.b = Mathf.Lerp(popTextConfiguration.blinkToColor.b, originalColor.b, Mathf.Clamp01(percentage));
+            color.r = Mathf.Lerp(popTextConfiguration.blinkToColor.r, originalColor.r, Mathf.Clamp01(blinkPercentage));
+            color.g = Mathf.Lerp(popTextConfiguration.blinkToColor.g, originalColor.g, Mathf.Clamp01(blinkPercentage));
+            color.b = Mathf.Lerp(popTextConfiguration.blinkToColor.b, originalColor.b, Mathf.Clamp01(blinkPercentage));
         }
 
         poppingText.color = color;

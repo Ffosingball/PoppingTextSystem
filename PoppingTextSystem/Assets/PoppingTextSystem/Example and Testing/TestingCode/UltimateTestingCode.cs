@@ -11,7 +11,8 @@ public class UltimateTestingCode : MonoBehaviour
     private PopTextConfiguration popTextConfiguration;
     private float timePassed=0f, direction=1f;
     private TMP_Text appearEffectsText, stayEffectsText, disappearEffectsText;
-    private GameObject textSelected, objectSelected;
+    private TMP_Text timeAppearStageText, timeStayStageText, timeDisappearStageText;
+    private GameObject textSelected;
     private PoppingTextEffects effectSelected;
     private PoppingTextStage stageSelected;
 
@@ -25,10 +26,13 @@ public class UltimateTestingCode : MonoBehaviour
         stayEffectsText = transform.Find("StayListPanel").Find("effectsList").GetComponent<TMP_Text>();
         disappearEffectsText = transform.Find("DisappearListPanel").Find("effectsList").GetComponent<TMP_Text>();
         textSelected = text1;
-        objectSelected = object1;
         popTextConfiguration.moveWithGameObject = false;
         effectSelected = PoppingTextEffects.Fade;
         stageSelected = PoppingTextStage.Appearing;
+        popTextConfiguration.blinkToColor = Color.yellow;
+        timeAppearStageText = transform.Find("TimeAppearStage").GetComponent<TMP_Text>();
+        timeStayStageText = transform.Find("TimeStayStage").GetComponent<TMP_Text>();
+        timeDisappearStageText = transform.Find("TimeDisappearStage").GetComponent<TMP_Text>();
     }
 
 
@@ -85,6 +89,10 @@ public class UltimateTestingCode : MonoBehaviour
             }
         }
         disappearEffectsText.text = listOfEffects;
+
+        timeAppearStageText.text = popTextConfiguration.appearTime+" sec";
+        timeStayStageText.text = popTextConfiguration.timeToStay+" sec";
+        timeDisappearStageText.text = popTextConfiguration.disappearTime+" sec";
     }
 
 
@@ -112,6 +120,10 @@ public class UltimateTestingCode : MonoBehaviour
                 return "Blink";
             case PoppingTextEffects.BlinkColor:
                 return "Blink Color";
+            case PoppingTextEffects.SecondaryEnlarge:
+                return "Secondary enlarge";
+            case PoppingTextEffects.SecondaryReduce:
+                return "Secondary reduce";
         }
 
         return "Unidentified";
@@ -142,16 +154,16 @@ public class UltimateTestingCode : MonoBehaviour
         switch(valueSelected)
         {
             case 0:
-                objectSelected = object1;
+                popTextConfiguration.appearAt = object1;
                 break;
             case 1:
-                objectSelected = object2;
+                popTextConfiguration.appearAt = object2;
                 break;
             case 2:
-                objectSelected = object3;
+                popTextConfiguration.appearAt = object3;
                 break;
             case 3:
-                objectSelected = object4;
+                popTextConfiguration.appearAt = object4;
                 break;
         }
     }
@@ -191,6 +203,12 @@ public class UltimateTestingCode : MonoBehaviour
                 break;
             case 9:
                 effectSelected = PoppingTextEffects.BlinkColor;
+                break;
+            case 10:
+                effectSelected = PoppingTextEffects.SecondaryEnlarge;
+                break;
+            case 11:
+                effectSelected = PoppingTextEffects.SecondaryReduce;
                 break;
         }
     }
@@ -237,6 +255,45 @@ public class UltimateTestingCode : MonoBehaviour
             case PoppingTextStage.Disappearing:
                 if(!popTextConfiguration.disappearEffects.Contains(effectSelected))
                     popTextConfiguration.disappearEffects.Add(effectSelected);
+                break;
+        }
+    }
+
+
+
+    public void increaseTime()
+    {
+        switch(stageSelected)
+        {
+            case PoppingTextStage.Appearing:
+                popTextConfiguration.appearTime+=0.2f;
+                break;
+            case PoppingTextStage.Staying:
+                popTextConfiguration.timeToStay+=0.2f;
+                break;
+            case PoppingTextStage.Disappearing:
+                popTextConfiguration.disappearTime+=0.2f;
+                break;
+        }
+    }
+
+
+
+    public void decreaseTime()
+    {
+        switch(stageSelected)
+        {
+            case PoppingTextStage.Appearing:
+                if(popTextConfiguration.appearTime>0.2f)
+                    popTextConfiguration.appearTime-=0.2f;
+                break;
+            case PoppingTextStage.Staying:
+                if(popTextConfiguration.timeToStay>0.2f)
+                    popTextConfiguration.timeToStay-=0.2f;
+                break;
+            case PoppingTextStage.Disappearing:
+                if(popTextConfiguration.disappearTime>0.2f)
+                    popTextConfiguration.disappearTime-=0.2f;
                 break;
         }
     }

@@ -41,7 +41,7 @@ public class PoppingTextManager : MonoBehaviour
         if(popTextConfiguration.moveWithGameObject)
         {
             newPoppingText.transform.SetParent(popTextConfiguration.appearAt.transform);
-            newPoppingText.GetComponent<RectTransform>().position = new Vector3(0,0,0);
+            //newPoppingText.GetComponent<RectTransform>().position = new Vector3(0,0,0);
         }
 
         newPoppingText.GetComponent<PoppingTextComponent>().setTextEffectsConfiguration(textEffectsConfiguration);

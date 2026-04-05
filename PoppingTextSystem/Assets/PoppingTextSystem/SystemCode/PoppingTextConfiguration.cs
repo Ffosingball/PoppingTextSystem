@@ -8,6 +8,8 @@ public enum PoppingTextEffects
 {
     Fade,
     Enlarge,
+    SecondaryEnlarge,
+    SecondaryReduce,
     Reduce,
     Appear,
     MoveUp,

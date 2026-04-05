@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: TextEffectsConfiguration
   m_EditorClassIdentifier: Assembly-CSharp::TextEffectsConfiguration
   changeSizeBy: 10
-  moveBy: 10
+  secondarySizeChangeBy: 2
+  moveBySpeed: 0.8
   blinkPeriod: 0.5
-  blinkRange: 50
+  blinkRange: 0.3
+  changeZby: -0.001
